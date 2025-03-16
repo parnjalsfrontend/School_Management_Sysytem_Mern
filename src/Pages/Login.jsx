@@ -1,12 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { FaEye, FaEyeSlash, FaSun, FaMoon } from "react-icons/fa"; // Import sun & moon icons
+
+const rolePasswords = {
+  student: "student@123",
+  parent: "parent@123",
+  teacher: "teacher@123",
+  admin: "admin@123",
+  report: "report@123",
+};
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("student");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("darkMode") === "true"
@@ -27,6 +37,11 @@ const Login = () => {
       (role === "report" && email !== "report@gmail.com")
     ) {
       setError("Incorrect email for the selected role!");
+      return;
+    }
+
+    if (password !== rolePasswords[role]) {
+      setError("Incorrect password for this role!");
       return;
     }
 
@@ -71,9 +86,9 @@ const Login = () => {
         <div className="flex justify-end mb-4">
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-md text-sm font-bold border transition-all border-gray-500 hover:bg-gray-700 hover:text-white"
+            className="p-2 rounded-md text-lg border transition-all border-gray-500 hover:bg-gray-700 hover:text-white"
           >
-            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+            {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
           </button>
         </div>
 
@@ -126,17 +141,17 @@ const Login = () => {
             />
           </motion.div>
 
-          {/* Password Input */}
+          {/* Password Input with Eye Toggle */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="mb-5"
+            className="mb-5 relative"
           >
             <label className="block mb-1 font-semibold text-lg">Password</label>
             <input
-              type="password"
-              className={`w-full p-3 rounded-lg text-lg border transition-all ${
+              type={showPassword ? "text" : "password"}
+              className={`w-full p-3 rounded-lg text-lg border transition-all pr-12 ${
                 darkMode
                   ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-blue-400"
                   : "bg-gray-100 border-gray-300 text-black focus:ring-2 focus:ring-blue-600"
@@ -146,6 +161,13 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            {/* Eye Icon */}
+            <span
+              className="absolute top-10 right-4 cursor-pointer text-gray-500"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash size={22} /> : <FaEye size={22} />}
+            </span>
           </motion.div>
 
           {/* Error Message */}
@@ -170,14 +192,6 @@ const Login = () => {
             Login
           </motion.button>
         </form>
-
-        {/* Forgot Password */}
-        <p className="text-center text-sm mt-5 opacity-70">
-          Forgot Password?{" "}
-          <span className="underline cursor-pointer hover:text-blue-400">
-            Reset Here
-          </span>
-        </p>
       </motion.div>
     </div>
   );
